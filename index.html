@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For You ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;800&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; padding: 0; height: 100vh;
+            display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            font-family: 'Nunito', sans-serif;
+            overflow: hidden;
+        }
+
+        /* 1. The Entrance Overlay */
+        #entrance {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 77, 109, 0.98);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 1000; color: white;
+            transition: opacity 0.8s ease;
+        }
+        
+        #entrance button {
+            margin-top: 20px; padding: 15px 40px; font-size: 1.5rem;
+            background: white; color: #ff4d6d; border: none;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        #entrance button:hover { transform: scale(1.1); }
+
+        /* 2. Main Card */
+        .container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 40px; border-radius: 30px; text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 400px; width: 90%;
+            display: none; 
+        }
+
+        .gif-area img { 
+            width: 100%; max-width: 200px; height: auto; 
+            border-radius: 15px; display: block; margin: 0 auto;
+        }
+
+        h1 {
+            font-family: 'Pacifico', cursive; color: #d00000;
+            font-size: 2rem; margin: 20px 0;
+        }
+
+        .btns { display: flex; justify-content: center; gap: 15px; margin-top: 20px; }
+
+        button {
+            padding: 10px 30px; border: none; border-radius: 25px;
+            font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #yes { background: #ff4757; color: white; }
+        #no { background: white; color: #ff4757; border: 2px solid #ff4757; }
+
+        .hidden { display: none; }
+        
+        .floating-heart {
+            position: absolute; font-size: 24px;
+            animation: floatUp 6s linear infinite;
+            top: 100vh; opacity: 0.7;
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            to { transform: translateY(-110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="entrance">
+        <h1>I have a question...</h1>
+        <button onclick="startApp()">💌 Click to Open 💌</button>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="kalyani.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <div class="container" id="main-card">
+        
+        <div id="question-screen">
+            <div class="gif-area">
+                <img src="https://i.giphy.com/media/c76IJLufpNwSULPk77/giphy.gif" alt="Please">
+            </div>
+            <h1>Do you love me? ❤️</h1>
+            <div class="btns">
+                <button id="yes" onclick="sayYes()">Yes</button>
+                <button id="no" onmouseover="moveNo()" ontouchstart="moveNo()">No</button>
+            </div>
+        </div>
+
+        <div id="success-screen" class="hidden">
+            <div class="gif-area">
+                <img src="https://media.tenor.com/gUiu1zyxfzYAAAAj/bear-kiss-bear-kisses.gif"alt="Yay">
+            </div>
+            <h1>Yay! I knew it! 😘</h1>
+            <p style="color: #d00000; font-weight: bold;">I Love You To ❤️</p>
+        </div>
+    </div>
+
+    <script>
+        function startApp() {
+            // 1. Play Local Music
+            const music = document.getElementById('bgMusic');
+            music.play().catch(error => {
+                console.log("Autoplay prevented. Music will start on next interaction.");
+            });
+
+            // 2. Hide Entrance
+            const entrance = document.getElementById('entrance');
+            entrance.style.opacity = '0';
+            setTimeout(() => {
+                entrance.style.display = 'none';
+                document.getElementById('main-card').style.display = 'block';
+            }, 800);
+
+            // 3. Start Hearts
+            setInterval(createHeart, 300);
+        }
+
+        function moveNo() {
+            const btn = document.getElementById('no');
+            // Ensure button stays within visible bounds
+            const maxX = window.innerWidth - btn.offsetWidth;
+            const maxY = window.innerHeight - btn.offsetHeight;
+            
+            const newX = Math.random() * maxX;
+            const newY = Math.random() * maxY;
+            
+            btn.style.position = 'fixed';
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+        }
+
+        function sayYes() {
+            document.getElementById('question-screen').classList.add('hidden');
+            document.getElementById('success-screen').classList.remove('hidden');
+            
+            // Explosion of confetti hearts
+            for(let i=0; i<30; i++) {
+                setTimeout(createHeart, i * 50);
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = Math.random() * 20 + 20 + 'px';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 5000);
+        }
+    </script>
+</body>
+</html>
